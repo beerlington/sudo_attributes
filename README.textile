@@ -1,8 +1,39 @@
 h1. sudo_attributes
 
-Adds 'sudo' methods to active record classes
+Adds 'sudo' methods to active record classes, allowing you to easily override protected attributes. 
 
-h2. Usage
+h2. The Problem
+
+ActiveRecord (ActiveModel in Rails 3) provides a convenient way to make your application more secure by using "protected" attributes. Protected attributes are assigned using either @attr_protected@ or @attr_accessible@. This adds security by preventing mass assignment of attributes when doing things like @user.update_attributes(params[:user])@. The issue is that it can be tedious to always manually assign protected attributes in an administrative area of your application. You may find yourself doing things like:
+
+<pre>
+user = User.find(params[:id])
+user.update_attributes(params[:user])
+user.admin = true
+user.something_else = true
+user.save
+</pre>
+
+h2. The Solution
+
+SudoAttributes adds a few 'sudo' methods to your models, allowing you to override the protected attributes when you know the input can be trusted.
+
+h2. Class Methods
+
+SudoAttributes adds a few class methods to your models:
+
+* @sudo_attr_protected :field1, :field2@ - Creates protected attributes and adds instance methods to your model (see below)
+* @sudo_attr_accessbie :field1@ - Creates accessible attributes and adds instance methods to your model (see below)
+
+You may also create new instances that override protected attributes using @Model.sudo_create@ and @Model.sudo_new@. These methods follow the same syntax as @Model.create@ and @Model.new@
+
+h2. Instance Methods
+
+SudoAttributes adds the following instance methods to any model that calls either @sudo_attr_protected@ or @sudo_attr_accessible@
+
+* @sudo_update_attributes@ - Uses identical syntax to @update_attributes@, but overrides protected attributes.
+
+h2. Examples
 
 <pre>
   class User < ActiveRecord::Base
