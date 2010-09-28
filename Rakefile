@@ -5,13 +5,13 @@ begin
   require 'jeweler'
   Jeweler::Tasks.new do |gem|
     gem.name = "sudo_attributes"
-    gem.summary = %Q{TODO: one-line summary of your gem}
-    gem.description = %Q{TODO: longer description of your gem}
-    gem.email = "pete@lette.us"
+    gem.summary = %Q{Override ActiveRecord protected attributes with mass assignment}
+    gem.description = %Q{Adds 'sudo' methods to update protected ActiveRecord attributes with mass assignment}
+    gem.email = "github@lette.us"
     gem.homepage = "http://github.com/beerlington/sudo_attributes"
     gem.authors = ["Peter Brown"]
-    gem.add_development_dependency "thoughtbot-shoulda", ">= 0"
-    # gem is a Gem::Specification... see http://www.rubygems.org/read/chapter/20 for additional settings
+    gem.add_development_dependency "rspec", ">= 1.2.9"
+    gem.add_dependency "rails", ">= 2.3.0"
   end
   Jeweler::GemcutterTasks.new
 rescue LoadError
