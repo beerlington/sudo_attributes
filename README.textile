@@ -20,34 +20,46 @@ SudoAttributes adds a few 'sudo' methods to your models, allowing you to overrid
 
 h2. Class Methods
 
-The following class methods will be available to your models:
+The following class methods will be available to your models which can be used in place of @attr_protected@ and @attr_accessible@ respectively. You may still use the methods provided by rails, but you must still use one of these methods (without any arguments) in order to gain access to the other @Model.sudo_*@ methods:
 
 * @sudo_attr_protected :field1, :field2@ - Creates protected attributes and adds instance methods to your model (see below)
-* @sudo_attr_accessbie :field1@ - Creates accessible attributes and adds instance methods to your model (see below)
+* @sudo_attr_accessible :field1, :field2@ - Creates accessible attributes and adds instance methods to your model (see below)
 
-You may also create new instances that override protected attributes using @Model.sudo_create@ and @Model.sudo_new@. These methods follow the same syntax as @Model.create@ and @Model.new@
+You may also create new instances that override protected attributes using the following methods:
+
+* @Model.sudo_create@ - Uses same syntax as @Model.create@ to instantiate and save an object with protected attributes
+* @Model.sudo_new@ - Uses same syntax as @Model.new@ to instantiate, but not save an object with protected attributes
 
 h2. Instance Methods
 
-The following instance methods will be available to any model that calls either @sudo_attr_protected@ or @sudo_attr_accessible@. They will not be available unless of of these methods is used.
+The following instance method is available to any ActiveRecord model and does not require the use of protected Class methods described above.
 
 * @sudo_update_attributes@ - Uses identical syntax to @update_attributes@, but overrides protected attributes.
 
 h2. Examples
 
+**Protect an admin boolean attribute**
+
 <pre>
-  class User < ActiveRecord::Base
-    sudo_attr_protected :admin
-  end
-  
-  @user = User.sudo_create(:name => "Pete", :admin => true)
-  
-  Then...
-  
-  @user.sudo_update_attributes(:admin => false)
-  
+class User < ActiveRecord::Base
+  sudo_attr_protected :admin
+end
 </pre>
 
-== Copyright
+In your admin controller...
+
+<pre>
+params[:user] = {:name => "Pete", :admin => true} (Typically set from a form)
+
+@user = User.sudo_create(params[:user])
+
+Somewhere else in your admin controller...
+
+params[:user] = {:admin => false, :name => "Pete"}
+
+@user.sudo_update_attributes(params[:user)
+</pre>
+
+h2. Copyright
 
 Copyright (c) 2010 Peter Brown. See LICENSE for details.
