@@ -1,6 +1,6 @@
 h1. sudo_attributes
 
-Adds 'sudo' methods to active record classes, allowing you to easily override protected attributes. 
+Adds 'sudo' methods to active record classes, allowing you to easily override protected attributes.
 
 h2. The Problem
 
@@ -20,7 +20,7 @@ SudoAttributes adds a few 'sudo' methods to your models, allowing you to overrid
 
 h2. Class Methods
 
-SudoAttributes adds a few class methods to your models:
+The following class methods will be available to your models:
 
 * @sudo_attr_protected :field1, :field2@ - Creates protected attributes and adds instance methods to your model (see below)
 * @sudo_attr_accessbie :field1@ - Creates accessible attributes and adds instance methods to your model (see below)
@@ -29,7 +29,7 @@ You may also create new instances that override protected attributes using @Mode
 
 h2. Instance Methods
 
-SudoAttributes adds the following instance methods to any model that calls either @sudo_attr_protected@ or @sudo_attr_accessible@
+The following instance methods will be available to any model that calls either @sudo_attr_protected@ or @sudo_attr_accessible@. They will not be available unless of of these methods is used.
 
 * @sudo_update_attributes@ - Uses identical syntax to @update_attributes@, but overrides protected attributes.
 
