@@ -1,0 +1,22 @@
+h1. sudo_attributes
+
+Adds 'sudo' methods to active record classes
+
+h2. Usage
+
+<pre>
+  class User < ActiveRecord::Base
+    sudo_attr_protected :admin
+  end
+  
+  @user = User.sudo_create(:name => "Pete", :admin => true)
+  
+  Then...
+  
+  @user.sudo_update_attributes(:admin => false)
+  
+</pre>
+
+== Copyright
+
+Copyright (c) 2010 Peter Brown. See LICENSE for details.
