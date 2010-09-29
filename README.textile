@@ -16,16 +16,25 @@ user.save
 
 h2. The Solution
 
-SudoAttributes adds a few 'sudo' methods to your models, allowing you to override the protected attributes when you know the input can be trusted.
+SudoAttributes adds a few 'sudo' methods to your models, allowing you to override the protected attributes **when you know the input can be trusted**.
+
+It's as easy as adding one method call to your models like so:
+
+<pre>
+class User < ActiveRecord::Base
+  enable_sudo_attributes :admin
+end
+</pre>
 
 h2. Class Methods
 
-The following class methods will be available to your models which can be used in place of @attr_protected@ and @attr_accessible@ respectively. You may still use the methods provided by rails, but you must still use one of these methods (without any arguments) in order to gain access to the other @Model.sudo_*@ methods:
+The class method *enable_sudo_attributes* will be available to all rails models. It accepts  and can be used in place of @attr_protected@ or @attr_accessible@. You may still use the default methods provided by rails, but you must still call @enable_sudo_attributes@ in order to gain access to the sudo methods:
 
-* @sudo_attr_protected :field1, :field2@ - Creates protected attributes and adds instance methods to your model (see below)
-* @sudo_attr_accessible :field1, :field2@ - Creates accessible attributes and adds instance methods to your model (see below)
+* @enable_sudo_attributes :protected => :attribute1@ - Defines a single protected attribute and adds additional sudo methods to your model (see below)
+* @enable_sudo_attributes :accessible => [:attribute1, :attribute2]@ - Defines two accessible attributes and adds additional sudo methods to your model
+* @enable_sudo_attributes@ - With no arguments, it will rely on calls to @attr_protected@ or @attr_accessible@, but still adds sudo methods
 
-You may also create new instances that override protected attributes using the following methods:
+Any model that calls @enable_sudo_attributes@ will also be able to create new instances that override protected attributes using the following methods:
 
 * @Model.sudo_create@ - Uses same syntax as @Model.create@ to instantiate and save an object with protected attributes
 * @Model.sudo_new@ - Uses same syntax as @Model.new@ to instantiate, but not save an object with protected attributes
@@ -42,7 +51,7 @@ h2. Examples
 
 <pre>
 class User < ActiveRecord::Base
-  sudo_attr_protected :admin
+  enable_sudo_attributes :admin
 end
 </pre>
 
