@@ -22,7 +22,7 @@ It's as easy as adding one method call to your models like so:
 
 <pre>
 class User < ActiveRecord::Base
-  enable_sudo_attributes :admin
+  enable_sudo_attributes :protected => :admin
 end
 </pre>
 
@@ -30,14 +30,17 @@ h2. Class Methods
 
 The class method *enable_sudo_attributes* will be available to all rails models. It accepts  and can be used in place of @attr_protected@ or @attr_accessible@. You may still use the default methods provided by rails, but you must still call @enable_sudo_attributes@ in order to gain access to the sudo methods:
 
-* @enable_sudo_attributes :protected => :attribute1@ - Defines a single protected attribute and adds additional sudo methods to your model (see below)
-* @enable_sudo_attributes :accessible => [:attribute1, :attribute2]@ - Defines two accessible attributes and adds additional sudo methods to your model
-* @enable_sudo_attributes@ - With no arguments, it will rely on calls to @attr_protected@ or @attr_accessible@, but still adds sudo methods
+@enable_sudo_attributes :protected => :attribute1@ - Defines a single protected attribute and adds additional sudo methods to your model (see below)
+
+@enable_sudo_attributes :accessible => [:attribute1, :attribute2]@ - Defines two accessible attributes and adds additional sudo methods to your model
+
+@enable_sudo_attributes@ - With no arguments, it will rely on calls to @attr_protected@ or @attr_accessible@, but still adds sudo methods
 
 Any model that calls @enable_sudo_attributes@ will also be able to create new instances that override protected attributes using the following methods:
 
-* @Model.sudo_create@ - Uses same syntax as @Model.create@ to instantiate and save an object with protected attributes
-* @Model.sudo_new@ - Uses same syntax as @Model.new@ to instantiate, but not save an object with protected attributes
+@Model.sudo_create@ - Uses same syntax as @Model.create@ to instantiate and save an object with protected attributes
+
+@Model.sudo_new@ - Uses same syntax as @Model.new@ to instantiate, but not save an object with protected attributes
 
 h2. Instance Methods
 
@@ -51,7 +54,7 @@ h2. Examples
 
 <pre>
 class User < ActiveRecord::Base
-  enable_sudo_attributes :admin
+  enable_sudo_attributes :protected => :admin
 end
 </pre>
 
