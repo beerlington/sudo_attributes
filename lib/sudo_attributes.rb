@@ -2,10 +2,10 @@ module SudoAttributes
   
   module Base
     # This is the method that will be called from each model you want to enable SudoAttributes in
-    def enable_sudo_attributes(attrs=nil)
-      raise "Invalid argument passed to enable_sudo_attributes" unless valid_attributes? attrs
+    def has_sudo_attributes(*attrs)
+      raise "Invalid argument passed to has_sudo_attributes" unless valid_attributes? attrs
 
-      set_protected_attributes(attrs) unless attrs.nil?
+      set_protected_attributes(attrs) unless attrs.empty?
 
       self.send :extend, SudoAttributes::ClassMethods
       self.send :include, SudoAttributes::InstanceMethods
@@ -13,21 +13,39 @@ module SudoAttributes
     
     private
     
-    # Validate that either nil, :protect, or :accessible has been given
     def valid_attributes?(attrs)
-      attrs.nil? || (attrs.is_a?(Hash) && (attrs.has_key?(:protected) || attrs.has_key?(:accessible)))
+      attrs.empty? || hash_syntax?(attrs) || all_symbols?(attrs)
+    end
+    
+    # True if argument is in the form ":protected => :field1" or ":accessible => :field2"
+    def hash_syntax?(attrs)
+      return false unless attrs.size == 1
+  
+      hash = attrs.first
+      
+      hash.is_a?(Hash) && (hash.has_key?(:protected) || hash.has_key?(:accessible))
+    end
+    
+    # True if argument is in the form ":field1, :field2, :field3"
+    def all_symbols?(attrs)
+      attrs.all? {|e| e.class == Symbol}
     end
 
     # Set the protected attributes depending on the key
     def set_protected_attributes(attrs)
-      key = attrs.has_key?(:protected) ? :protected : :accessible
+      if all_symbols? attrs
+        self.attr_protected *attrs
+      else
+        key = attrs[0].has_key?(:protected) ? :protected : :accessible
 
-      # Call either attr_protected or attr_accessible
-      self.send("attr_#{key}", *attrs[key])
+        # Call either attr_protected or attr_accessible
+        self.send("attr_#{key}", *attrs[0][key])
+      end
     end
+    
   end
   
-  # Added to ActiveRecord model only if enable_sudo_attributes is called
+  # Added to ActiveRecord model only if has_sudo_attributes is called
   module ClassMethods
     def sudo_create(attributes=nil)
       instance = sudo_new(attributes)
@@ -40,7 +58,6 @@ module SudoAttributes
     end
   end
  
-
   module InstanceMethods
     def initialize(attributes=nil, attributes_protected=true)
       super(nil)
