@@ -44,7 +44,7 @@ Any model that calls @has_sudo_attributes@ will also be able to create new insta
 
 @Model.sudo_create@ - Uses same syntax as @Model.create@ to instantiate and save an object with protected attributes
 
-@Model.sudo_create!@ - Similar to Model.sudo_create, but it raises an ActiveRecord::RecordInvalid exception if there are invalid attributes
+@Model.sudo_create!@ - Similar to @Model.sudo_create@, but it raises an ActiveRecord::RecordInvalid exception if there are invalid attributes
 
 @Model.sudo_new@ - Uses same syntax as @Model.new@ to instantiate, but not save an object with protected attributes
 
