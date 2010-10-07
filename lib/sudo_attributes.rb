@@ -53,6 +53,12 @@ module SudoAttributes
       instance
     end
 
+    def sudo_create!(attributes=nil)
+      instance = sudo_new(attributes)
+      instance.save!
+      instance
+    end
+
     def sudo_new(attributes=nil)
       new(attributes, false)
     end

@@ -1,42 +1,5 @@
 require File.expand_path(File.dirname(__FILE__) + '/spec_helper')
 
-ActiveRecord::Base.establish_connection(:adapter => "sqlite3", :database => ":memory:")
-
-ActiveRecord::Schema.define(:version => 1) do
-  create_table :cats, :force => true do |t|
-    t.string :name
-    t.string :color
-    t.integer :age
-  end
-end
-
-module SudoAttributesTest
-  ARGUMENTS = [
-    { :protected => :name},
-    { :accessible => [:color, :age] },
-    :name,
-    nil # No arguments passed in
-  ]
-  
-  def self.build_cat_class(arguments)
-
-    # Remove the Cat class if it's already been defined in previous run
-    Object.class_eval { remove_const "Cat" if const_defined? "Cat" }
-
-    # Create a new Cat class and evaluate 'has_sudo_attributes :arguments
-    klass = Class.new(ActiveRecord::Base)
-    Object.const_set("Cat", klass)
-
-    if arguments.nil? 
-      Cat.class_eval do
-        attr_protected :name
-        has_sudo_attributes
-      end
-    else
-      Cat.class_eval { has_sudo_attributes arguments }
-    end
-  end
-end
 
 describe "Cat" do
   
@@ -129,6 +92,41 @@ describe "Cat" do
           end
         end
       end
+    end
+  end
+end
+
+describe "A Cat" do
+
+  before(:each) do
+    SudoAttributesTest::build_cat_class(:name)
+  end
+
+  context "when initialized with invalid params using sudo_create!" do
+
+    it "should raise an ActiveRecord exception" do
+      begin
+        Cat.sudo_create! :name => "Smiles", :age => 12
+        true.should == false
+      rescue ActiveRecord::RecordInvalid
+        true.should == true
+      end
+    end
+  end
+
+  context "when initialized with valid params using sudo_create!" do
+    it "should not raise an ActiveRecord exception" do
+      begin
+        Cat.sudo_create! :name => "Smiles", :color => "gray", :age => 12
+        true.should == true
+      rescue ActiveRecord::RecordInvalid
+        true.should == false
+      end
+    end
+
+    it "should have a name" do
+      @cat = Cat.sudo_create! :name => "Smiles", :color => "gray", :age => 12
+      @cat.name.should == "Smiles"
     end
   end
 end
