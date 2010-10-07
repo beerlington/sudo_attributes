@@ -5,11 +5,11 @@
 
 Gem::Specification.new do |s|
   s.name = %q{sudo_attributes}
-  s.version = "0.2.0"
+  s.version = "0.3.0"
 
   s.required_rubygems_version = Gem::Requirement.new(">= 0") if s.respond_to? :required_rubygems_version=
   s.authors = ["Peter Brown"]
-  s.date = %q{2010-09-28}
+  s.date = %q{2010-10-07}
   s.description = %q{Adds 'sudo' methods to update protected ActiveRecord attributes with mass assignment}
   s.email = %q{github@lette.us}
   s.extra_rdoc_files = [
@@ -28,9 +28,7 @@ Gem::Specification.new do |s|
      "spec/spec.opts",
      "spec/spec_helper.rb",
      "spec/sudo_attributes_spec.rb",
-     "sudo_attributes.gemspec",
-     "test/helper.rb",
-     "test/test_sudo_attributes.rb"
+     "sudo_attributes.gemspec"
   ]
   s.homepage = %q{http://github.com/beerlington/sudo_attributes}
   s.rdoc_options = ["--charset=UTF-8"]
@@ -39,9 +37,7 @@ Gem::Specification.new do |s|
   s.summary = %q{Override ActiveRecord protected attributes with mass assignment}
   s.test_files = [
     "spec/spec_helper.rb",
-     "spec/sudo_attributes_spec.rb",
-     "test/helper.rb",
-     "test/test_sudo_attributes.rb"
+     "spec/sudo_attributes_spec.rb"
   ]
 
   if s.respond_to? :specification_version then
@@ -50,13 +46,16 @@ Gem::Specification.new do |s|
 
     if Gem::Version.new(Gem::VERSION) >= Gem::Version.new('1.2.0') then
       s.add_development_dependency(%q<rspec>, [">= 1.2.9"])
+      s.add_development_dependency(%q<sqlite3-ruby>, [">= 0"])
       s.add_runtime_dependency(%q<rails>, [">= 2.3.0"])
     else
       s.add_dependency(%q<rspec>, [">= 1.2.9"])
+      s.add_dependency(%q<sqlite3-ruby>, [">= 0"])
       s.add_dependency(%q<rails>, [">= 2.3.0"])
     end
   else
     s.add_dependency(%q<rspec>, [">= 1.2.9"])
+    s.add_dependency(%q<sqlite3-ruby>, [">= 0"])
     s.add_dependency(%q<rails>, [">= 2.3.0"])
   end
 end
