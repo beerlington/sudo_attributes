@@ -18,13 +18,12 @@ end
 
 module SudoAttributesTest
   ARGUMENTS = [
-    { :protected => :name},
-    { :accessible => [:color, :age] },
-    :name,
-    nil # No arguments passed in
+    "sudo_attr_protected :name",
+    "sudo_attr_accessible :color, :age",
+    "attr_protected :name; sudo_attr_protected"
   ]
   
-  def self.build_cat_class(arguments)
+  def self.build_cat_class(argument)
 
     # Remove the Cat class if it's already been defined in previous run
     Object.class_eval { remove_const "Cat" if const_defined? "Cat" }
@@ -33,16 +32,9 @@ module SudoAttributesTest
     klass = Class.new(ActiveRecord::Base)
     Object.const_set("Cat", klass)
 
-    if arguments.nil? 
-      Cat.class_eval do
-        attr_protected :name
-        has_sudo_attributes
-      end
-    else
-      Cat.class_eval do
-        validates_presence_of :color
-        has_sudo_attributes arguments
-      end
-    end
+    Cat.class_eval %{
+      validates_presence_of :color
+      #{argument}
+    }
   end
 end

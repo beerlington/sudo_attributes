@@ -22,25 +22,23 @@ It's as easy as adding one method call to your models like so:
 
 <pre>
 class User < ActiveRecord::Base
-  has_sudo_attributes :protected => :admin
+  sudo_attr_protected :admin
 end
 </pre>
 
 h2. Class Methods
 
-The class method *has_sudo_attributes* will be available to all rails models. When called with or without arguments, it adds numerous 'sudo' methods to the class. You may still use the default methods @attr_protected@ or @attr_accessible@ provided by rails, but you must still call @has_sudo_attributes@ in order to gain access to the sudo methods.
+The class methods *sudo_attr_protected* and *sudo_attr_accessible* will be available to all ActiveRecord models. When called, it adds numerous 'sudo' methods to the class. You may still use the default methods @attr_protected@ or @attr_accessible@ provided by rails, but you must still call @has_sudo_attributes@ in order to gain access to the sudo methods.
 
 Here are four different ways it can be used:
 
-@has_sudo_attributes :attribute1, :attribute2@ - Defines protected attributes
+@sudo_attr_protected :attribute1, :attribute2@ - Defines protected attributes
 
-@has_sudo_attributes :protected => :attribute1@ - Identical behavior to previous
+@sudo_attr_accessible :attribute1, :attribute2@ - Defines accessible attributes
 
-@has_sudo_attributes :accessible => [:attribute1, :attribute2]@ - Defines accessible attributes
+@sudo_attr_protected@ or @sudo_attr_accessible@ - With no arguments, it will rely on calls to @attr_protected@ or @attr_accessible@
 
-@has_sudo_attributes@ - With no arguments, it will rely on calls to @attr_protected@ or @attr_accessible@
-
-Any model that calls @has_sudo_attributes@ will also be able to create new instances that override protected attributes using the following methods:
+Any model that calls @sudo_attr_*@ will also be able to create new instances that override protected attributes using the following methods:
 
 @Model.sudo_create@ - Uses same syntax as @Model.create@ to instantiate and save an object with protected attributes
 
@@ -60,7 +58,7 @@ h2. Examples
 
 <pre>
 class User < ActiveRecord::Base
-  has_sudo_attributes :protected => :admin
+  sudo_attr_protected :admin
 end
 </pre>
 

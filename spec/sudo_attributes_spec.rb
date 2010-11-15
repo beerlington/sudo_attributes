@@ -99,7 +99,7 @@ end
 describe "A Cat" do
 
   before(:each) do
-    SudoAttributesTest::build_cat_class(:name)
+    SudoAttributesTest::build_cat_class("sudo_attr_protected :name")
   end
 
   context "when initialized with invalid params using sudo_create!" do
