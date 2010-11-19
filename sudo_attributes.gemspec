@@ -5,11 +5,11 @@
 
 Gem::Specification.new do |s|
   s.name = %q{sudo_attributes}
-  s.version = "0.3.0"
+  s.version = "0.4.0"
 
   s.required_rubygems_version = Gem::Requirement.new(">= 0") if s.respond_to? :required_rubygems_version=
   s.authors = ["Peter Brown"]
-  s.date = %q{2010-10-07}
+  s.date = %q{2010-11-19}
   s.description = %q{Adds 'sudo' methods to update protected ActiveRecord attributes with mass assignment}
   s.email = %q{github@lette.us}
   s.extra_rdoc_files = [
@@ -19,6 +19,8 @@ Gem::Specification.new do |s|
   s.files = [
     ".document",
      ".gitignore",
+     "Gemfile",
+     "Gemfile.lock",
      "LICENSE",
      "README.textile",
      "Rakefile",
@@ -27,8 +29,7 @@ Gem::Specification.new do |s|
      "lib/sudo_attributes.rb",
      "spec/spec.opts",
      "spec/spec_helper.rb",
-     "spec/sudo_attributes_spec.rb",
-     "sudo_attributes.gemspec"
+     "spec/sudo_attributes_spec.rb"
   ]
   s.homepage = %q{http://github.com/beerlington/sudo_attributes}
   s.rdoc_options = ["--charset=UTF-8"]
