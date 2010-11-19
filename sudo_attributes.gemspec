@@ -29,7 +29,8 @@ Gem::Specification.new do |s|
      "lib/sudo_attributes.rb",
      "spec/spec.opts",
      "spec/spec_helper.rb",
-     "spec/sudo_attributes_spec.rb"
+     "spec/sudo_attributes_spec.rb",
+     "sudo_attributes.gemspec"
   ]
   s.homepage = %q{http://github.com/beerlington/sudo_attributes}
   s.rdoc_options = ["--charset=UTF-8"]
