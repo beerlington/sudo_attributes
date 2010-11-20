@@ -24,6 +24,9 @@ It's as easy as adding one method call to your models like so:
 class User < ActiveRecord::Base
   sudo_attr_protected :admin
 end
+
+user = User.find(params[:id])
+user.sudo_update_attributes(params[:user])
 </pre>
 
 h2. Class Methods
