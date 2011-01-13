@@ -54,6 +54,7 @@ h2. Instance Methods
 The following instance method is available to any ActiveRecord model that calls @has_sudo_attributes@
 
 * @sudo_update_attributes@ - Uses identical syntax to @update_attributes@, but overrides protected attributes.
+* @sudo_update_attributes!@ - Same as sudo_update_attributes, but raises ActiveRecord errors. Same as @update_attributes!@
 
 h2. Examples
 
