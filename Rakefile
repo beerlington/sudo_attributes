@@ -10,7 +10,8 @@ begin
     gem.email = "github@lette.us"
     gem.homepage = "http://github.com/beerlington/sudo_attributes"
     gem.authors = ["Peter Brown"]
-    gem.add_development_dependency "rspec", ">= 1.2.9"
+    gem.add_development_dependency "rspec", "~> 2.0.0"
+    gem.add_development_dependency "rails", "~> 3.0.0"
     gem.add_development_dependency "sqlite3-ruby"
     gem.add_dependency "rails", ">= 2.3.0"
   end
