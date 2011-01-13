@@ -32,6 +32,19 @@ describe "Cat" do
             @cat.name.should == "Smiles"
           end
 
+          it "should not raise an error with sudo_update_attributes" do
+            lambda { @cat.sudo_update_attributes(:color => "") }.should_not raise_error(ActiveRecord::RecordInvalid)
+          end
+
+          it "should set the name with sudo_update_attributes!" do
+            @cat.sudo_update_attributes!(:name => "Smiles")
+            @cat.name.should == "Smiles"
+          end
+
+          it "should raise an error with sudo_update_attributes!" do
+            lambda { @cat.sudo_update_attributes!(:color => "") }.should raise_error(ActiveRecord::RecordInvalid)
+          end
+
           it "should have a color" do
             @cat.color.should == @attributes[:color]
           end

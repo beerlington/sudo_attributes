@@ -50,6 +50,11 @@ module SudoAttributes
       self.send(:attributes=, new_attributes, false)
       save
     end
+
+    def sudo_update_attributes!(new_attributes)
+      self.send(:attributes=, new_attributes, false)
+      save!
+    end
   end
 end
 
