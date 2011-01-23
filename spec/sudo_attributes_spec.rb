@@ -55,28 +55,32 @@ describe "Cat" do
         
         end
 
-        context "SudoAttributes sudo_new initializer" do
-          before(:each) { @cat = Cat.sudo_new @attributes}
+        # Tests for sudo_new and sudo_build, aliases of each other
+        [:sudo_new, :sudo_build].each do |sudo_method|
 
-          it "should have a name" do
-            @cat.name.should == @attributes[:name]
-          end
-          
-          it "should set the name with sudo_update_attributes" do
-            @cat.sudo_update_attributes(:name => "Portia")
-            @cat.name.should == "Portia"
-          end
+          context "SudoAttributes #{sudo_method} initializer" do
+            before(:each) { @cat = Cat.send(sudo_method, @attributes)}
 
-          it "should have a color" do
-            @cat.color.should == @attributes[:color]
-          end
+            it "should have a name" do
+              @cat.name.should == @attributes[:name]
+            end
+            
+            it "should set the name with sudo_update_attributes" do
+              @cat.sudo_update_attributes(:name => "Portia")
+              @cat.name.should == "Portia"
+            end
 
-          it "should not have an id" do
-            @cat.id.should be_nil
-          end
-          
-          it "should have an age" do
-            @cat.age.should == @attributes[:age]
+            it "should have a color" do
+              @cat.color.should == @attributes[:color]
+            end
+
+            it "should not have an id" do
+              @cat.id.should be_nil
+            end
+            
+            it "should have an age" do
+              @cat.age.should == @attributes[:age]
+            end
           end
         end
 
