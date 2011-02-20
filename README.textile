@@ -2,6 +2,14 @@ h1. sudo_attributes
 
 Adds 'sudo' methods to active record classes, allowing you to easily override protected attributes.
 
+h2. Requirements
+
+*Rails:* Any version of Rails 2.3.x or Rails 3.x. (Older versions of Rails may work, but have not been tested)
+
+h2. Installation
+
+The gem is hosted at "rubygems.org":https://rubygems.org/gems/sudo_attributes and can be installed with: @gem install sudo_attributes@
+
 h2. The Problem
 
 ActiveRecord (ActiveModel in Rails 3) provides a convenient way to make your application more secure by using "protected" attributes. Protected attributes are assigned using either @attr_protected@ or @attr_accessible@. This adds security by preventing mass assignment of attributes when doing things like @user.update_attributes(params[:user])@. The issue is that it can be tedious to always manually assign protected attributes in an administrative area of your application. You may find yourself doing things like:

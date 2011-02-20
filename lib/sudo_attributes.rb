@@ -27,15 +27,12 @@ module SudoAttributes
     end
   end
 
-  module Private
+  module Private # :nodoc: all
 
     # Used internally to assign protected attributes and include additional sudo_attributes functionality
     def self.set_attributes(klass, attrs, type)
-      unless attrs.empty?
-        raise "Invalid argument passed to has_sudo_attributes" unless attrs.all? {|a| a.is_a? Symbol }
-
-        klass.send("attr_#{type}", *attrs)
-      end
+      # Call attr_(accessible|protected) if attributes are passed in
+      klass.send("attr_#{type}", *attrs) unless attrs.empty?
 
       klass.extend SudoAttributes::ClassMethods
       klass.send :include, SudoAttributes::InstanceMethods
@@ -81,10 +78,8 @@ module SudoAttributes
       instance
     end
 
-    # Alias of +sudo_new+
-    def sudo_build(attributes=nil)
-      sudo_new(attributes)
-    end
+    alias sudo_build sudo_new
+
   end
 
   # Added to ActiveRecord model only if sudo_attr_(accessible|protected) is called
