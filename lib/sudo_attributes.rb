@@ -78,10 +78,8 @@ module SudoAttributes
       instance
     end
 
-    # Alias of +sudo_new+
-    def sudo_build(attributes=nil)
-      sudo_new(attributes)
-    end
+    alias sudo_build sudo_new
+
   end
 
   # Added to ActiveRecord model only if sudo_attr_(accessible|protected) is called
