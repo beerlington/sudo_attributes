@@ -1,123 +1,86 @@
 require File.expand_path(File.dirname(__FILE__) + '/spec_helper')
 
-
 describe "Cat" do
-  
-  SudoAttributesTest::ARGUMENTS.each do |arguments|
-    
-    SudoAttributesTest::build_cat_class(arguments)
-    
-    context "calling has_sudo_attributes #{arguments.inspect}" do
-      
-      before(:all) do
-        @attributes = {:name => "Smiles", :color => "gray", :age => 6}
-      end
+  let(:attributes) { {:name => "Smiles", :color => "gray", :age => 6} }
 
-      context "that is built using" do
+  context "default rails initializer" do
+    let(:cat) { Cat.new(attributes) }
 
-        context "default rails initializer" do
-          before(:each) { @cat = Cat.new @attributes}
-
-          it "should not have a name" do
-            @cat.name.should be_nil
-          end
-          
-          it "should not set the name with update_attributes" do
-            @cat.update_attributes(:name => "Smiles")
-            @cat.name.should be_nil
-          end
-          
-          it "should set the name with sudo_update_attributes" do
-            @cat.sudo_update_attributes(:name => "Smiles")
-            @cat.name.should == "Smiles"
-          end
-
-          it "should not raise an error with sudo_update_attributes" do
-            lambda { @cat.sudo_update_attributes(:color => "") }.should_not raise_error(ActiveRecord::RecordInvalid)
-          end
-
-          it "should set the name with sudo_update_attributes!" do
-            @cat.sudo_update_attributes!(:name => "Smiles")
-            @cat.name.should == "Smiles"
-          end
-
-          it "should raise an error with sudo_update_attributes!" do
-            lambda { @cat.sudo_update_attributes!(:color => "") }.should raise_error(ActiveRecord::RecordInvalid)
-          end
-
-          it "should have a color" do
-            @cat.color.should == @attributes[:color]
-          end
-          
-          it "should have an age" do
-            @cat.age.should == @attributes[:age]
-          end
-        
-        end
-
-        # Tests for sudo_new and sudo_build, aliases of each other
-        [:sudo_new, :sudo_build].each do |sudo_method|
-
-          context "SudoAttributes #{sudo_method} initializer" do
-            before(:each) { @cat = Cat.send(sudo_method, @attributes)}
-
-            it "should have a name" do
-              @cat.name.should == @attributes[:name]
-            end
-            
-            it "should set the name with sudo_update_attributes" do
-              @cat.sudo_update_attributes(:name => "Portia")
-              @cat.name.should == "Portia"
-            end
-
-            it "should have a color" do
-              @cat.color.should == @attributes[:color]
-            end
-
-            it "should not have an id" do
-              @cat.id.should be_nil
-            end
-            
-            it "should have an age" do
-              @cat.age.should == @attributes[:age]
-            end
-          end
-        end
-
-        context "SudoAttributes sudo_create initializer" do
-          before(:each) { @cat = Cat.sudo_create @attributes}
-
-          it "should have a name" do
-            @cat.name.should == @attributes[:name]
-          end
-          
-          it "should set the name with sudo_update_attributes" do
-            @cat.sudo_update_attributes(:name => "Portia")
-            @cat.name.should == "Portia"
-          end
-
-          it "should have a color" do
-            @cat.color.should == @attributes[:color]
-          end
-
-          it "should have an id" do
-            @cat.id.should_not be_nil
-          end
-          
-          it "should have an age" do
-            @cat.age.should == @attributes[:age]
-          end
-        end
-      end
+    it "should not have a name" do
+      cat.name.should be_nil
     end
+
+    it "should not set the name with update_attributes" do
+      cat.update_attributes(:name => "Smiles")
+      cat.name.should be_nil
+    end
+
+    it "should set the name with sudo_update_attributes" do
+      cat.sudo_update_attributes(:name => "Smiles")
+      cat.name.should == "Smiles"
+    end
+
+    it "should not raise an error with sudo_update_attributes" do
+      lambda { cat.sudo_update_attributes(:color => "") }.should_not raise_error(ActiveRecord::RecordInvalid)
+    end
+
+    it "should set the name with sudo_update_attributes!" do
+      cat.sudo_update_attributes!(:name => "Smiles")
+      cat.name.should == "Smiles"
+    end
+
+    it "should raise an error with sudo_update_attributes!" do
+      lambda { cat.sudo_update_attributes!(:color => "") }.should raise_error(ActiveRecord::RecordInvalid)
+    end
+
+    it "should have a color" do
+      cat.color.should eql('gray')
+    end
+
+    it "should have an age" do
+      cat.age.should eql(6)
+    end
+
+  end
+
+  # Tests for sudo_new and sudo_build, aliases of each other
+  [:sudo_new, :sudo_build].each do |sudo_method|
+
+    context "SudoAttributes #{sudo_method} initializer" do
+      let(:cat) { Cat.send(sudo_method, attributes) }
+
+      subject { cat }
+      its(:name) { should eql('Smiles') }
+      its(:color) { should eql('gray') }
+      its(:id) { should be_nil }
+      its(:age) { should eql(6) }
+
+      it "should set the name with sudo_update_attributes" do
+        cat.sudo_update_attributes(:name => "Portia")
+        cat.name.should == "Portia"
+      end
+
+    end
+  end
+
+  context "SudoAttributes sudo_create initializer" do
+    let(:cat) { Cat.sudo_create(attributes) }
+
+    subject { cat }
+    its(:name) { should eql('Smiles') }
+    its(:color) { should eql('gray') }
+    its(:id) { should_not be_nil }
+    its(:age) { should eql(6) }
+
+    it "should set the name with sudo_update_attributes" do
+      cat.sudo_update_attributes(:name => "Portia")
+      cat.name.should == "Portia"
+    end
+
   end
 end
 
 describe "A Cat" do
-
-  before(:each) do
-    SudoAttributesTest::build_cat_class("sudo_attr_protected :name")
-  end
 
   context "when initialized with invalid params using sudo_create!" do
 
@@ -142,8 +105,8 @@ describe "A Cat" do
     end
 
     it "should have a name" do
-      @cat = Cat.sudo_create! :name => "Smiles", :color => "gray", :age => 12
-      @cat.name.should == "Smiles"
+      cat = Cat.sudo_create! :name => "Smiles", :color => "gray", :age => 12
+      cat.name.should == "Smiles"
     end
   end
 end

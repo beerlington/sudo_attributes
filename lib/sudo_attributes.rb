@@ -1,45 +1,6 @@
 module SudoAttributes
+  extend ActiveSupport::Concern
 
-  module Base
-
-    # Protect attributes using ActiveRecord's built in <tt>attr_protected</tt> class macro.
-    # When invoked, it also adds other sudo_attributes class and instance methods to model such as +sudo_create+
-    #
-    # ==== Example
-    #   # Define attributes which are protected from mass assignment
-    #   class User < ActiveRecord::Base
-    #     sudo_attr_protected :admin
-    #   end
-    def sudo_attr_protected(*attrs)
-      Private::set_attributes(self, attrs, :protected)
-    end
-
-    # Protect attributes using ActiveRecord's built in <tt>attr_accessible</tt> class macro.
-    # When invoked, it also adds other sudo_attributes class and instance methods to model such as +sudo_create+
-    #
-    # ==== Example
-    #   # Define attributes which are not protected from mass assignment
-    #   class User < ActiveRecord::Base
-    #     sudo_attr_accessible :admin
-    #   end
-    def sudo_attr_accessible(*attrs)
-      Private::set_attributes(self, attrs, :accessible)
-    end
-  end
-
-  module Private # :nodoc: all
-
-    # Used internally to assign protected attributes and include additional sudo_attributes functionality
-    def self.set_attributes(klass, attrs, type)
-      # Call attr_(accessible|protected) if attributes are passed in
-      klass.send("attr_#{type}", *attrs) unless attrs.empty?
-
-      klass.extend SudoAttributes::ClassMethods
-      klass.send :include, SudoAttributes::InstanceMethods
-    end
-  end
-
-  # Added to ActiveRecord model only if sudo_attr_(accessible|protected) is called
   module ClassMethods
     # Creates an object with protected attributes and saves it to the database, if validations pass.
     # The resulting object is returned whether the object was saved successfully to the database or not.
@@ -74,7 +35,7 @@ module SudoAttributes
     #   User.sudo_new(:first_name => 'Pete', :admin => true)
     def sudo_new(attributes=nil)
       instance = new(nil)
-      instance.send(:attributes=, attributes, false)
+      instance.assign_attributes(attributes, :without_protection => true)
       instance
     end
 
@@ -93,7 +54,7 @@ module SudoAttributes
     #   @user = User.find(params[:id])
     #   @user.sudo_update_attributes(params[:user])
     def sudo_update_attributes(new_attributes)
-      self.send(:attributes=, new_attributes, false)
+      assign_attributes(new_attributes, :without_protection => true)
       save
     end
 
@@ -105,10 +66,10 @@ module SudoAttributes
     #   @user = User.find(params[:id])
     #   @user.sudo_update_attributes!(params[:user])
     def sudo_update_attributes!(new_attributes)
-      self.send(:attributes=, new_attributes, false)
+      assign_attributes(new_attributes, :without_protection => true)
       save!
     end
   end
 end
 
-ActiveRecord::Base.extend SudoAttributes::Base
+ActiveRecord::Base.send(:include, SudoAttributes)
