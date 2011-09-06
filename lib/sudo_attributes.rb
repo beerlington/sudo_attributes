@@ -21,7 +21,7 @@ module SudoAttributes
     #   end
     #
     #   # Creating an Array of new objects using a block, where the block is executed for each object:
-    #   User.create([{ :first_name => 'Pete' }, { :first_name => 'Sebastian' }]) do |u|
+    #   User.sudo_create([{ :first_name => 'Pete' }, { :first_name => 'Sebastian' }]) do |u|
     #     u.is_admin = false
     #   end
     def sudo_create(attributes = nil, &block)
@@ -58,7 +58,7 @@ module SudoAttributes
     #   User.sudo_new(:first_name => 'Pete', :admin => true)
     def sudo_new(attributes = nil)
       instance = new(nil)
-      instance.assign_attributes(attributes, :without_protection => true)
+      instance.sudo_assign_attributes(attributes)
       instance
     end
 
@@ -66,7 +66,6 @@ module SudoAttributes
 
   end
 
-  # Added to ActiveRecord model only if sudo_attr_(accessible|protected) is called
   module InstanceMethods
 
     # Updates attributes of a model, including protected ones, from the passed-in hash and saves the
@@ -77,7 +76,7 @@ module SudoAttributes
     #   @user = User.find(params[:id])
     #   @user.sudo_update_attributes(params[:user])
     def sudo_update_attributes(new_attributes)
-      assign_attributes(new_attributes, :without_protection => true)
+      sudo_assign_attributes(new_attributes)
       save
     end
 
@@ -89,8 +88,17 @@ module SudoAttributes
     #   @user = User.find(params[:id])
     #   @user.sudo_update_attributes!(params[:user])
     def sudo_update_attributes!(new_attributes)
-      assign_attributes(new_attributes, :without_protection => true)
+      sudo_assign_attributes(new_attributes)
       save!
+    end
+
+    # Used by sudo_attributes internally as a common API between Rails 3 and 3.1
+    def sudo_assign_attributes(attributes)
+      if respond_to? :assign_attributes
+        assign_attributes(attributes, :without_protection => true)
+      else
+        self.send(:attributes=, attributes, false)
+      end
     end
   end
 end
