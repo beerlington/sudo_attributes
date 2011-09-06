@@ -1,59 +1,38 @@
 module SudoAttributes
+  extend ActiveSupport::Concern
 
-  module Base
-
-    # Protect attributes using ActiveRecord's built in <tt>attr_protected</tt> class macro.
-    # When invoked, it also adds other sudo_attributes class and instance methods to model such as +sudo_create+
-    #
-    # ==== Example
-    #   # Define attributes which are protected from mass assignment
-    #   class User < ActiveRecord::Base
-    #     sudo_attr_protected :admin
-    #   end
-    def sudo_attr_protected(*attrs)
-      Private::set_attributes(self, attrs, :protected)
-    end
-
-    # Protect attributes using ActiveRecord's built in <tt>attr_accessible</tt> class macro.
-    # When invoked, it also adds other sudo_attributes class and instance methods to model such as +sudo_create+
-    #
-    # ==== Example
-    #   # Define attributes which are not protected from mass assignment
-    #   class User < ActiveRecord::Base
-    #     sudo_attr_accessible :admin
-    #   end
-    def sudo_attr_accessible(*attrs)
-      Private::set_attributes(self, attrs, :accessible)
-    end
-  end
-
-  module Private # :nodoc: all
-
-    # Used internally to assign protected attributes and include additional sudo_attributes functionality
-    def self.set_attributes(klass, attrs, type)
-      # Call attr_(accessible|protected) if attributes are passed in
-      klass.send("attr_#{type}", *attrs) unless attrs.empty?
-
-      klass.extend SudoAttributes::ClassMethods
-      klass.send :include, SudoAttributes::InstanceMethods
-    end
-  end
-
-  # Added to ActiveRecord model only if sudo_attr_(accessible|protected) is called
   module ClassMethods
-    # Creates an object with protected attributes and saves it to the database, if validations pass.
+    # Creates an object (or multiple objects) with protected attributes and saves it to the database, if validations pass.
     # The resulting object is returned whether the object was saved successfully to the database or not.
     #
-    # Unlike ActiveRecord::Base.create, the <tt>attributes</tt> parameter can only be a Hash. This Hash describes the
+    # The +attributes+ parameter can be either be a Hash or an Array of Hashes. These Hashes describe the
     # attributes on the objects that are to be created.
     #
-    # ==== Example
-    #   # Create a single new object where admin is a protected attribute
-    #   User.sudo_create(:first_name => 'Pete', :admin => true)
-    def sudo_create(attributes=nil)
-      instance = sudo_new(attributes)
-      instance.save
-      instance
+    # ==== Examples
+    #   # Create a single new object
+    #   User.sudo_create(:first_name => 'Pete')
+    #
+    #   # Create an Array of new objects
+    #   User.sudo_create([{ :first_name => 'Pete' }, { :first_name => 'Sebastian' }])
+    #
+    #   # Create a single object and pass it into a block to set other attributes.
+    #   User.sudo_create(:first_name => 'Pete') do |u|
+    #     u.is_admin = false
+    #   end
+    #
+    #   # Creating an Array of new objects using a block, where the block is executed for each object:
+    #   User.sudo_create([{ :first_name => 'Pete' }, { :first_name => 'Sebastian' }]) do |u|
+    #     u.is_admin = false
+    #   end
+    def sudo_create(attributes = nil, &block)
+      if attributes.is_a?(Array)
+        attributes.collect { |attr| sudo_create(attr, &block) }
+      else
+        object = sudo_new(attributes)
+        yield(object) if block_given?
+        object.save
+        object
+      end
     end
 
     # Creates an object just like sudo_create but calls save! instead of save so an exception is raised if the record is invalid
@@ -61,10 +40,15 @@ module SudoAttributes
     # ==== Example
     #   # Create a single new object where admin is a protected attribute
     #   User.sudo_create!(:first_name => 'Pete', :admin => true)
-    def sudo_create!(attributes=nil)
-      instance = sudo_new(attributes)
-      instance.save!
-      instance
+    def sudo_create!(attributes = nil, &block)
+      if attributes.is_a?(Array)
+        attributes.collect { |attr| sudo_create!(attr, &block) }
+      else
+        object = sudo_new(attributes)
+        yield(object) if block_given?
+        object.save!
+        object
+      end
     end
 
     # Instantiates an object just like ActiveRecord::Base.new, but allowing mass assignment of protected attributes
@@ -72,9 +56,9 @@ module SudoAttributes
     # ==== Example
     #   # Instantiate an object where admin is a protected attribute
     #   User.sudo_new(:first_name => 'Pete', :admin => true)
-    def sudo_new(attributes=nil)
+    def sudo_new(attributes = nil)
       instance = new(nil)
-      instance.send(:attributes=, attributes, false)
+      instance.sudo_assign_attributes(attributes)
       instance
     end
 
@@ -82,7 +66,6 @@ module SudoAttributes
 
   end
 
-  # Added to ActiveRecord model only if sudo_attr_(accessible|protected) is called
   module InstanceMethods
 
     # Updates attributes of a model, including protected ones, from the passed-in hash and saves the
@@ -93,7 +76,7 @@ module SudoAttributes
     #   @user = User.find(params[:id])
     #   @user.sudo_update_attributes(params[:user])
     def sudo_update_attributes(new_attributes)
-      self.send(:attributes=, new_attributes, false)
+      sudo_assign_attributes(new_attributes)
       save
     end
 
@@ -105,10 +88,19 @@ module SudoAttributes
     #   @user = User.find(params[:id])
     #   @user.sudo_update_attributes!(params[:user])
     def sudo_update_attributes!(new_attributes)
-      self.send(:attributes=, new_attributes, false)
+      sudo_assign_attributes(new_attributes)
       save!
+    end
+
+    # Used by sudo_attributes internally as a common API between Rails 3 and 3.1
+    def sudo_assign_attributes(attributes)
+      if respond_to? :assign_attributes
+        assign_attributes(attributes, :without_protection => true)
+      else
+        self.send(:attributes=, attributes, false)
+      end
     end
   end
 end
 
-ActiveRecord::Base.extend SudoAttributes::Base
+ActiveRecord::Base.send(:include, SudoAttributes)

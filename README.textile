@@ -12,7 +12,7 @@ The gem is hosted at "rubygems.org":https://rubygems.org/gems/sudo_attributes an
 
 h2. The Problem
 
-ActiveRecord (ActiveModel in Rails 3) provides a convenient way to make your application more secure by using "protected" attributes. Protected attributes are assigned using either @attr_protected@ or @attr_accessible@. This adds security by preventing mass assignment of attributes when doing things like @user.update_attributes(params[:user])@. The issue is that it can be tedious to always manually assign protected attributes in an administrative area of your application. You may find yourself doing things like:
+ActiveModel provides a convenient way to make your application more secure by using "protected" attributes. Protected attributes are assigned using either @attr_protected@ or @attr_accessible@. This adds security by preventing mass assignment of attributes when doing things like @user.update_attributes(params[:user])@. The issue is that it can be tedious to always manually assign protected attributes in an administrative area of your application. You may find yourself doing things like:
 
 <pre>
 user = User.find(params[:id])
@@ -22,15 +22,20 @@ user.something_else = true
 user.save
 </pre>
 
+or the alternative in Rails 3.1:
+
+<pre>
+user.assign_attributes(params[:user], :without_protection => true)
+user.save
+</pre>
+
 h2. The Solution
 
 SudoAttributes adds a few 'sudo' methods to your models, allowing you to override the protected attributes **when you know the input can be trusted**.
 
-It's as easy as adding one method call to your models like so:
-
 <pre>
 class User < ActiveRecord::Base
-  sudo_attr_protected :admin
+  attr_protected :admin
 end
 
 user = User.find(params[:id])
@@ -38,18 +43,6 @@ user.sudo_update_attributes(params[:user])
 </pre>
 
 h2. Class Methods
-
-The class methods *sudo_attr_protected* and *sudo_attr_accessible* will be available to all ActiveRecord models. When called, it adds numerous 'sudo' methods to the class. You may still use the default methods @attr_protected@ or @attr_accessible@ provided by rails, but you must still call @has_sudo_attributes@ in order to gain access to the sudo methods.
-
-Here are four different ways it can be used:
-
-@sudo_attr_protected :attribute1, :attribute2@ - Defines protected attributes
-
-@sudo_attr_accessible :attribute1, :attribute2@ - Defines accessible attributes
-
-@sudo_attr_protected@ or @sudo_attr_accessible@ - With no arguments, it will rely on calls to @attr_protected@ or @attr_accessible@
-
-Any model that calls @sudo_attr_*@ will also be able to create new instances that override protected attributes using the following methods:
 
 @Model.sudo_create@ - Uses same syntax as @Model.create@ to instantiate and save an object with protected attributes
 
@@ -59,10 +52,9 @@ Any model that calls @sudo_attr_*@ will also be able to create new instances tha
 
 h2. Instance Methods
 
-The following instance method is available to any ActiveRecord model that calls @has_sudo_attributes@
+@sudo_update_attributes@ - Uses identical syntax to @update_attributes@, but overrides protected attributes.
 
-* @sudo_update_attributes@ - Uses identical syntax to @update_attributes@, but overrides protected attributes.
-* @sudo_update_attributes!@ - Same as sudo_update_attributes, but raises ActiveRecord errors. Same as @update_attributes!@
+@sudo_update_attributes!@ - Same as sudo_update_attributes, but raises ActiveRecord errors. Same as @update_attributes!@
 
 h2. Examples
 
@@ -70,7 +62,7 @@ h2. Examples
 
 <pre>
 class User < ActiveRecord::Base
-  sudo_attr_protected :admin
+  attr_protected :admin
 end
 </pre>
 
@@ -90,4 +82,4 @@ params[:user] = {:admin => false, :name => "Pete"}
 
 h2. Copyright
 
-Copyright (c) 2010 Peter Brown. See LICENSE for details.
+Copyright (c) 2011 Peter Brown. See LICENSE for details.
