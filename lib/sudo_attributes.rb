@@ -2,19 +2,37 @@ module SudoAttributes
   extend ActiveSupport::Concern
 
   module ClassMethods
-    # Creates an object with protected attributes and saves it to the database, if validations pass.
+    # Creates an object (or multiple objects) with protected attributes and saves it to the database, if validations pass.
     # The resulting object is returned whether the object was saved successfully to the database or not.
     #
-    # Unlike ActiveRecord::Base.create, the <tt>attributes</tt> parameter can only be a Hash. This Hash describes the
+    # The +attributes+ parameter can be either be a Hash or an Array of Hashes. These Hashes describe the
     # attributes on the objects that are to be created.
     #
-    # ==== Example
-    #   # Create a single new object where admin is a protected attribute
-    #   User.sudo_create(:first_name => 'Pete', :admin => true)
-    def sudo_create(attributes=nil)
-      instance = sudo_new(attributes)
-      instance.save
-      instance
+    # ==== Examples
+    #   # Create a single new object
+    #   User.sudo_create(:first_name => 'Pete')
+    #
+    #   # Create an Array of new objects
+    #   User.sudo_create([{ :first_name => 'Pete' }, { :first_name => 'Sebastian' }])
+    #
+    #   # Create a single object and pass it into a block to set other attributes.
+    #   User.sudo_create(:first_name => 'Pete') do |u|
+    #     u.is_admin = false
+    #   end
+    #
+    #   # Creating an Array of new objects using a block, where the block is executed for each object:
+    #   User.create([{ :first_name => 'Pete' }, { :first_name => 'Sebastian' }]) do |u|
+    #     u.is_admin = false
+    #   end
+    def sudo_create(attributes = nil, &block)
+      if attributes.is_a?(Array)
+        attributes.collect { |attr| sudo_create(attr, &block) }
+      else
+        object = sudo_new(attributes)
+        yield(object) if block_given?
+        object.save
+        object
+      end
     end
 
     # Creates an object just like sudo_create but calls save! instead of save so an exception is raised if the record is invalid
@@ -22,10 +40,15 @@ module SudoAttributes
     # ==== Example
     #   # Create a single new object where admin is a protected attribute
     #   User.sudo_create!(:first_name => 'Pete', :admin => true)
-    def sudo_create!(attributes=nil)
-      instance = sudo_new(attributes)
-      instance.save!
-      instance
+    def sudo_create!(attributes = nil, &block)
+      if attributes.is_a?(Array)
+        attributes.collect { |attr| sudo_create!(attr, &block) }
+      else
+        object = sudo_new(attributes)
+        yield(object) if block_given?
+        object.save!
+        object
+      end
     end
 
     # Instantiates an object just like ActiveRecord::Base.new, but allowing mass assignment of protected attributes
@@ -33,7 +56,7 @@ module SudoAttributes
     # ==== Example
     #   # Instantiate an object where admin is a protected attribute
     #   User.sudo_new(:first_name => 'Pete', :admin => true)
-    def sudo_new(attributes=nil)
+    def sudo_new(attributes = nil)
       instance = new(nil)
       instance.assign_attributes(attributes, :without_protection => true)
       instance

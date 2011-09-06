@@ -6,8 +6,11 @@ describe "Cat" do
   context "default rails initializer" do
     let(:cat) { Cat.new(attributes) }
 
-    it "should not have a name" do
-      cat.name.should be_nil
+    context 'baseline check' do
+      subject { cat }
+      its(:name) { should be_nil }
+      its(:color) { should eql('gray') }
+      its(:age) { should eql(6) }
     end
 
     it "should not set the name with update_attributes" do
@@ -21,7 +24,7 @@ describe "Cat" do
     end
 
     it "should not raise an error with sudo_update_attributes" do
-      lambda { cat.sudo_update_attributes(:color => "") }.should_not raise_error(ActiveRecord::RecordInvalid)
+      -> { cat.sudo_update_attributes(:color => "") }.should_not raise_error(ActiveRecord::RecordInvalid)
     end
 
     it "should set the name with sudo_update_attributes!" do
@@ -30,23 +33,14 @@ describe "Cat" do
     end
 
     it "should raise an error with sudo_update_attributes!" do
-      lambda { cat.sudo_update_attributes!(:color => "") }.should raise_error(ActiveRecord::RecordInvalid)
+      -> { cat.sudo_update_attributes!(:color => "") }.should raise_error(ActiveRecord::RecordInvalid)
     end
-
-    it "should have a color" do
-      cat.color.should eql('gray')
-    end
-
-    it "should have an age" do
-      cat.age.should eql(6)
-    end
-
   end
 
   # Tests for sudo_new and sudo_build, aliases of each other
   [:sudo_new, :sudo_build].each do |sudo_method|
 
-    context "SudoAttributes #{sudo_method} initializer" do
+    context "#{sudo_method} initializer" do
       let(:cat) { Cat.send(sudo_method, attributes) }
 
       subject { cat }
@@ -63,7 +57,7 @@ describe "Cat" do
     end
   end
 
-  context "SudoAttributes sudo_create initializer" do
+  context "sudo_create initializer for single object" do
     let(:cat) { Cat.sudo_create(attributes) }
 
     subject { cat }
@@ -71,13 +65,60 @@ describe "Cat" do
     its(:color) { should eql('gray') }
     its(:id) { should_not be_nil }
     its(:age) { should eql(6) }
+  end
 
-    it "should set the name with sudo_update_attributes" do
-      cat.sudo_update_attributes(:name => "Portia")
-      cat.name.should == "Portia"
+  context "sudo_create initializer w/block for single object" do
+    let(:cat) { Cat.sudo_create(attributes) {|u| u.color = 'white' } }
+
+    subject { cat }
+    its(:name) { should eql('Smiles') }
+    its(:color) { should eql('white') }
+    its(:id) { should_not be_nil }
+    its(:age) { should eql(6) }
+  end
+
+  context "sudo_create initializer for multiple objects" do
+    let(:attributes2) { {:name => "Portia", :color => "black", :age => 4} }
+    let(:cats) { Cat.sudo_create([attributes, attributes2]) }
+
+    context 'first object' do
+      subject { cats[0] }
+      its(:name) { should eql('Smiles') }
+      its(:color) { should eql('gray') }
+      its(:id) { should_not be_nil }
+      its(:age) { should eql(6) }
     end
 
+    context 'second object' do
+      subject { cats[1] }
+      its(:name) { should eql('Portia') }
+      its(:color) { should eql('black') }
+      its(:id) { should_not be_nil }
+      its(:age) { should eql(4) }
+    end
   end
+
+  context "sudo_create! initializer for multiple objects" do
+    let(:attributes2) { {:name => "Portia", :color => "black", :age => 4} }
+    let(:cats) { Cat.sudo_create!([attributes, attributes2]) }
+
+    context 'first object' do
+      subject { cats[0] }
+      its(:name) { should eql('Smiles') }
+      its(:color) { should eql('gray') }
+      its(:id) { should_not be_nil }
+      its(:age) { should eql(6) }
+    end
+
+    context 'second object' do
+      subject { cats[1] }
+      its(:name) { should eql('Portia') }
+      its(:color) { should eql('black') }
+      its(:id) { should_not be_nil }
+      its(:age) { should eql(4) }
+    end
+  end
+
 end
 
 describe "A Cat" do
