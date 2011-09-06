@@ -4,9 +4,7 @@ Adds 'sudo' methods to active record classes, allowing you to easily override pr
 
 h2. Requirements
 
-*Rails:* Rails 3.1.x
-
-If you need support for older versions, use 0.5.6
+*Rails:* Any version of Rails 2.3.x or Rails 3.x. (Older versions of Rails may work, but have not been tested)
 
 h2. Installation
 
