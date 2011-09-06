@@ -24,7 +24,7 @@ describe "Cat" do
     end
 
     it "should not raise an error with sudo_update_attributes" do
-      -> { cat.sudo_update_attributes(:color => "") }.should_not raise_error(ActiveRecord::RecordInvalid)
+      lambda { cat.sudo_update_attributes(:color => "") }.should_not raise_error(ActiveRecord::RecordInvalid)
     end
 
     it "should set the name with sudo_update_attributes!" do
@@ -33,7 +33,7 @@ describe "Cat" do
     end
 
     it "should raise an error with sudo_update_attributes!" do
-      -> { cat.sudo_update_attributes!(:color => "") }.should raise_error(ActiveRecord::RecordInvalid)
+      lambda { cat.sudo_update_attributes!(:color => "") }.should raise_error(ActiveRecord::RecordInvalid)
     end
   end
 
