@@ -98,6 +98,26 @@ describe "Cat" do
     end
   end
 
+  context "sudo_create! initializer for single object" do
+    let(:cat) { Cat.sudo_create!(attributes) }
+
+    subject { cat }
+    its(:name) { should eql('Smiles') }
+    its(:color) { should eql('gray') }
+    its(:id) { should_not be_nil }
+    its(:age) { should eql(6) }
+  end
+
+  context "sudo_create! initializer w/block for single object" do
+    let(:cat) { Cat.sudo_create!(attributes) {|u| u.color = 'white' } }
+
+    subject { cat }
+    its(:name) { should eql('Smiles') }
+    its(:color) { should eql('white') }
+    its(:id) { should_not be_nil }
+    its(:age) { should eql(6) }
+  end
+
   context "sudo_create! initializer for multiple objects" do
     let(:attributes2) { {:name => "Portia", :color => "black", :age => 4} }
     let(:cats) { Cat.sudo_create!([attributes, attributes2]) }
