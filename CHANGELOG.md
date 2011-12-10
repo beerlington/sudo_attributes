@@ -7,6 +7,7 @@
 ## 1.0.0
 
 * Rails 3.1 support
+* Removed `sudo_attr_protected/accessible` method, now available to all models
 * Better compatibility with Rails API for protected attrs
 * Added travis.yml CI support
 
