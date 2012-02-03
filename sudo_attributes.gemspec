@@ -5,24 +5,25 @@
 
 Gem::Specification.new do |s|
   s.name = %q{sudo_attributes}
-  s.version = "1.0.1"
+  s.version = "1.0.2"
 
   s.required_rubygems_version = Gem::Requirement.new(">= 0") if s.respond_to? :required_rubygems_version=
   s.authors = [%q{Peter Brown}]
-  s.date = %q{2011-09-06}
+  s.date = %q{2012-02-03}
   s.description = %q{Adds 'sudo' methods to update protected ActiveRecord attributes with mass assignment}
   s.email = %q{github@lette.us}
   s.extra_rdoc_files = [
     "LICENSE",
-    "README.textile"
+    "README.md"
   ]
   s.files = [
     ".document",
     ".travis.yml",
+    "CHANGELOG.md",
     "Gemfile",
     "Gemfile.lock",
     "LICENSE",
-    "README.textile",
+    "README.md",
     "Rakefile",
     "VERSION",
     "init.rb",
@@ -35,7 +36,7 @@ Gem::Specification.new do |s|
   s.homepage = %q{http://github.com/beerlington/sudo_attributes}
   s.licenses = [%q{MIT}]
   s.require_paths = [%q{lib}]
-  s.rubygems_version = %q{1.8.6}
+  s.rubygems_version = %q{1.8.9}
   s.summary = %q{Override ActiveRecord protected attributes with mass assignment}
 
   if s.respond_to? :specification_version then
