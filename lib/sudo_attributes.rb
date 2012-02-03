@@ -1,6 +1,4 @@
 module SudoAttributes
-  extend ActiveSupport::Concern
-
   module ClassMethods
     # Creates an object (or multiple objects) with protected attributes and saves it to the database, if validations pass.
     # The resulting object is returned whether the object was saved successfully to the database or not.
@@ -103,4 +101,5 @@ module SudoAttributes
   end
 end
 
-ActiveRecord::Base.send(:include, SudoAttributes)
+ActiveRecord::Base.send(:include, SudoAttributes::InstanceMethods)
+ActiveRecord::Base.extend SudoAttributes::ClassMethods
