@@ -1,5 +1,9 @@
 # SudoAttributes Changelog
 
+## 1.0.2
+
+* Removed use of ActiveSupport::Concern
+
 ## 1.0.1
 
 * Removed Rails 3.1 dependency
