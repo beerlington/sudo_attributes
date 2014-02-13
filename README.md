@@ -1,8 +1,10 @@
 # sudo_attributes
 
-[![Build Status](https://secure.travis-ci.org/beerlington/sudo_attributes.png?branch=master)](http://travis-ci.org/beerlington/sudo_attributes)
-
 Adds 'sudo' methods to active record classes, allowing you to easily override protected attributes.
+
+## Project Status
+
+**This gem is no longer being maintained. With the introduction of [strong parameters](http://guides.rubyonrails.org/action_controller_overview.html#strong-parameters) to Rails, the functionality this gem provides is no longer needed.**
 
 ## Requirements
 
